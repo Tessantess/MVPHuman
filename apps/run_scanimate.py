@@ -34,7 +34,7 @@ from lib.scanimate.utils.net_util import batch_rod2quat, homogenize, load_networ
 from lib.scanimate.model.IGRSDFNet import IGRSDFNet
 from lib.scanimate.model.LBSNet import LBSNet
 from lib.scanimate.data.MVPDataset import MVPDataset_scan
-
+from lib.common.mesh_util import build_mesh_by_poisson
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -106,11 +106,9 @@ def gen_mesh1(opt, result_dir, fwd_skin_net, inv_skin_net, lat_vecs_inv_skin,
             valid_scan_faces = scan_faces[scan_mask, :]
             pred_scan_cano_mesh = trimesh.Trimesh(vertices=pred_scan_cano[0].cpu().numpy(),
                                                   faces=valid_scan_faces[:, [0, 2, 1]], process=False)
-            pred_scan_cano_mesh.export('%s/canon.obj' % result_dir)
-            # TODO
-            # from lib.common.mesh_util import build_mesh_by_poisson
-            #  new_vertices, new_faces = build_mesh_by_poisson(pred_scan_cano_mesh.vertices, pred_scan_cano_mesh.faces, 40000)
-            # save_obj_mesh('%s/canon.obj' % result_dir, new_vertices, new_faces)
+            # pred_scan_cano_mesh.export('%s/canon.obj' % result_dir)
+            new_vertices, new_faces = build_mesh_by_poisson(pred_scan_cano_mesh.vertices, pred_scan_cano_mesh.faces, 40000)
+            save_obj_mesh('%s/canon.obj' % result_dir, new_vertices, new_faces)
 
     if name == '_pt3':
         logging.info("Outputing samples of canonicalization results...")
